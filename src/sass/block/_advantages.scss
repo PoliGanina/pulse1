@@ -20,7 +20,14 @@
             display: block;
             width: 70px;
             margin: 0 auto;
-        }   
+        }
+        &_animated {
+            animation: heartbeat 1.5s ease infinite;
+            &:hover {
+                animation-play-state: paused;
+            }
+        }  
+         
     }
     &__label {
         margin: 0 auto;

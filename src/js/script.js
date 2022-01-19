@@ -11,7 +11,7 @@ $(document).ready(function(){
                     slidesToShow: 1,
                     slidesToScroll: 1,
                     infinite: true,
-                    dots: true
+                    dots: false
                 }
             }
         ]
@@ -36,5 +36,86 @@ $(document).ready(function(){
 
     toggleSlide('.catalog-item__link');
     toggleSlide('.catalog-item__back');
+
+    // Modal
+
+    $('[data-modal=consultation]').on('click', function() {
+        $('.overlay, #consultation').fadeIn('fast');
+    });
+    $('.modal__close').on('click', function() {
+        $('.overlay, #consultation, #order, #thans').fadeOut('fast');
+    });
+    $('.button_catalog').each(function(i) {
+        $(this).on('click', function() {
+            $('#order .modal__descr').text($('.catalog-item__subtitle').eq(i).text());
+            $('.overlay, #order').fadeIn('fast');
+        })
+    })
+
+    function validateForm(form) {
+        $(form).validate({
+            rules: {
+                name: {
+                    required: true,
+                    minlength: 2,
+                },
+                phone: "required",
+                email: {
+                    required: true,
+                    email: true
+                }
+            },
+            messages: {
+                name: {
+                    required: "Пожалуйста, введите свое имя",
+                    minlength: jQuery.validator.format("Имя должно содержать не менее {0} символов")
+                },
+                phone: "Пожалуйста, введите свой номер телефона",
+                email: {
+                    required: "Пожалуйста, введите свою почту",
+                    email: "Почта должна быть в формате name@domain.com"
+                },
+            },
+        });
+    };
+
+    validateForm('#consultation-form');
+    validateForm('#consultation form');
+    validateForm('#order form');
+
+    $('input[name=phone]').mask("+7 (999) 999-99-99");
+
+    $('form').submit(function(e) {
+        e.preventDefault();
+
+        //чтобы пустые значения формы не отправлялись
+        if (!$(this).valid()){
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "mailer/smart.php",
+            data: $(this).serialize()
+        }).done(function(){
+            $(this).find("input").val("");
+            $('#consultation, #order').fadeOut();
+            $('.overlay, #thanks').fadeIn('slow');
+            $('form').trigger('reset');
+        });
+        return false;
+    });
+
+    //smooth scroll and page up
+
+    $(window).scroll(function () {
+        if ($(this).scrollTop() > 1600) {
+            $('.pageup').fadeIn();
+        } else {
+            $('.pageup').fadeOut();
+        }
+    });
+
+    new WOW().init();
 
   });
